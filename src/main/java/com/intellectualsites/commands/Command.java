@@ -1,16 +1,19 @@
 package com.intellectualsites.commands;
 
 import com.intellectualsites.commands.callers.CommandCaller;
+import com.intellectualsites.commands.util.Argument;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public abstract class Command extends CommandManager {
 
     private Class requiredType = Object.class;
     private String command, usage = "", description = "", permission = "";
     private String[] aliases = new String[0];
-    protected Argument[] requiredArguments;
+    protected Map<String, Argument> requiredArguments = new HashMap<String, Argument>();
 
     public Command() {
         super(null, new ArrayList<Command>());
@@ -93,7 +96,7 @@ public abstract class Command extends CommandManager {
         return this.command.hashCode();
     }
 
-    public abstract boolean onCommand(CommandCaller caller, String[] arguments);
+    public abstract boolean onCommand(CommandCaller caller, String[] arguments, Map<String, Object> valueMapping);
 
     final public int handle(CommandCaller caller, String[] args) {
         if (args.length == 0) {
@@ -127,7 +130,18 @@ public abstract class Command extends CommandManager {
         return this.aliases;
     }
 
-    final public Argument[] getRequiredArguments() {
-        return this.requiredArguments;
+    final public Map<String, Argument> getRequiredArguments() {
+        return new HashMap<String, Argument>(this.requiredArguments);
+    }
+
+    public <T> Command withArgument(String name, ArgumentType<T> argumentType, String desc) {
+        Argument argument = new Argument<T>(name, argumentType, desc);
+        requiredArguments.put(name, argument);
+        return this;
+    }
+
+    public <T> Command withArgument(Argument<T> argument) {
+        requiredArguments.put(argument.getName(), argument);
+        return this;
     }
 }

@@ -1,8 +1,9 @@
 package com.intellectualsites.commands.callers;
-
-import com.intellectualsites.commands.Argument;
 import com.intellectualsites.commands.Command;
 import com.intellectualsites.commands.CommandManager;
+import com.intellectualsites.commands.util.Argument;
+
+import java.util.Collection;
 
 public class SystemCaller implements CommandCaller {
 
@@ -18,11 +19,12 @@ public class SystemCaller implements CommandCaller {
         return new Object();
     }
 
-    public void sendRequiredArgumentsList(CommandManager manager, Command cmd, Argument[] required) {
+    public void sendRequiredArgumentsList(CommandManager manager, Command cmd, Collection required, String usage) {
         StringBuilder builder = new StringBuilder();
-        builder.append(manager.getInitialCharacter()).append(cmd.getCommand()).append(" requires ");
-        for (Argument argument : required) {
-            builder.append(argument.getName()).append(" (").append(argument.getExample()).append("), ");
+        builder.append(cmd.getCommand()).append(" requires ");
+        for (Object o: required) {
+            Argument argument = (Argument) o;
+            builder.append(argument.getName()).append(" (").append(argument.getArgumentType().getName()).append("; Example: ").append(argument.getArgumentType().getExample()).append("), ");
         }
         message(builder.substring(0, builder.length() - 2));
     }

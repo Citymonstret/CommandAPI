@@ -1,11 +1,11 @@
 package com.intellectualsites.commands;
 
-public abstract class Argument<T> {
+public abstract class ArgumentType<T> {
 
     private final String name;
     private final T example;
 
-    public Argument(String name, T example) {
+    public ArgumentType(String name, T example) {
         this.name = name;
         this.example = example;
     }
@@ -25,18 +25,18 @@ public abstract class Argument<T> {
         return this.example;
     }
 
-    public static final Argument<Integer> Integer = new Argument<java.lang.Integer>("int", 16) {
+    public static final ArgumentType<Integer> Integer = new ArgumentType<java.lang.Integer>("int", 16) {
         @Override
         public Integer parse(String in) {
             Integer value = null;
             try {
-                value = Integer.parse(in);
+                value = java.lang.Integer.parseInt(in);
             } catch(final Exception ignored) {}
             return value;
         }
     };
 
-    public static final Argument<Boolean> Boolean = new Argument<java.lang.Boolean>("boolean", true) {
+    public static final ArgumentType<Boolean> Boolean = new ArgumentType<java.lang.Boolean>("boolean", true) {
         @Override
         public Boolean parse(String in) {
             Boolean value = null;
@@ -49,7 +49,7 @@ public abstract class Argument<T> {
         }
     };
 
-    public static final Argument<String> String = new Argument<java.lang.String>("String", "Example") {
+    public static final ArgumentType<String> String = new ArgumentType<java.lang.String>("String", "Example") {
         @Override
         public String parse(String in) {
             return in;
