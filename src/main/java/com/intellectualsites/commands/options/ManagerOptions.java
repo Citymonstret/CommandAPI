@@ -4,7 +4,8 @@ import com.intellectualsites.commands.permission.AdvancedPermission;
 
 public class ManagerOptions {
 
-    private boolean requireInitialCharacter, useAdvancedPermissions, registerToCloud, findCloseMatches;
+    private boolean requireInitialCharacter, useAdvancedPermissions,
+            registerToCloud, findCloseMatches, printStacktrace;
     private AdvancedPermission.PermissionChecker permissionChecker;
 
     public ManagerOptions() {
@@ -13,6 +14,11 @@ public class ManagerOptions {
         this.useAdvancedPermissions = false;
         this.findCloseMatches = true;
         this.registerToCloud = true;
+        this.printStacktrace = true;
+    }
+
+    public boolean getPrintStacktrace() {
+        return this.printStacktrace;
     }
 
     public boolean getFindCloseMatches() {
@@ -33,6 +39,11 @@ public class ManagerOptions {
 
     public AdvancedPermission.PermissionChecker getPermissionChecker() {
         return this.permissionChecker;
+    }
+
+    public ManagerOptions setPrintStacktrace(boolean printStacktrace) {
+        this.printStacktrace = printStacktrace;
+        return this;
     }
 
     public ManagerOptions setRegisterToCloud(boolean registerToCloud) {

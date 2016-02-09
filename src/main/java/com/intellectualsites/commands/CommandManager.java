@@ -108,7 +108,6 @@ public class CommandManager {
         commandResultBuilder.setCaller(caller);
         commandResultBuilder.setManager(this);
         commandResultBuilder.setInput(input);
-
         scope:
         {
             // If we want to use the prefix, then this will make sure it's there
@@ -197,7 +196,7 @@ public class CommandManager {
                     break scope;
                 }
             } catch (final Throwable t) {
-                t.printStackTrace();
+                commandResultBuilder.setStacktrace(t);
                 commandResultBuilder.setCommandResult(CommandHandlingOutput.ERROR);
                 break scope;
             }

@@ -9,10 +9,11 @@ public class CommandResult {
     private final CommandManager manager;
     private final CommandCaller caller;
     private Command closestMatch;
+    private Throwable throwable;
     private final int commandResult;
     private String input;
 
-    protected CommandResult(String input, CommandManager commandManager, Command command, CommandCaller caller, int commandResult) {
+    protected CommandResult(String input, CommandManager commandManager, Command command, CommandCaller caller, int commandResult, Throwable throwable) {
         this.command = command;
         this.caller = caller;
         this.manager = commandManager;
@@ -30,6 +31,14 @@ public class CommandResult {
                 closestMatch = command;
             }
         }
+
+        if (throwable != null && manager.getManagerOptions().getPrintStacktrace()) {
+            throwable.printStackTrace();
+        }
+    }
+
+    public Throwable getStacktrace() {
+        return this.throwable;
     }
 
     public int getCommandResult() {
@@ -63,8 +72,13 @@ public class CommandResult {
         private CommandManager manager = null;
         private Command command = null;
         private String input = "";
+        private Throwable throwable = null;
 
         protected CommandResultBuilder(){}
+
+        public void setStacktrace(Throwable throwable) {
+            this.throwable = throwable;
+        }
 
         public void setCommandResult(int commandResult) {
             this.commandResult = commandResult;
@@ -87,7 +101,7 @@ public class CommandResult {
         }
 
         public CommandResult build() {
-            return new CommandResult(input, manager, command, caller, commandResult);
+            return new CommandResult(input, manager, command, caller, commandResult, throwable);
         }
     }
 }
