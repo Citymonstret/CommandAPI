@@ -23,15 +23,28 @@ public class CommandTest {
                         return caller.hasAttachment(command.getPermission());
                     }
                 });
-        manager.handle(caller, "test banana 10");
+        CommandResult result = manager.handle(caller, "tlest banana 10");
 
-        for (CommandManager command : CommandCloud.get('/')) {
-            if (command instanceof Command) {
-                caller.message("Found command: /" + ((Command) command).getCommand());
+        caller.message("Result: " + CommandHandlingOutput.nameField(result.getCommandResult()));
+        try {
+            caller.message("Input: " + result.getInput());
+            caller.message("Caller: " + result.getCaller());
+            if (result.getCommand() == null) {
+                caller.message("Closets Match: " + result.getClosestMatch());
             } else {
-                caller.message("Found manager: " + manager.getMeta("environment"));
+                caller.message("Command: " + result.getCommand());
             }
+        } catch(NullPointerException e) {
+            e.printStackTrace();
         }
+
+        // for (CommandManager command : CommandCloud.get('/')) {
+        //    if (command instanceof Command) {
+        //        caller.message("Found command: /" + ((Command) command).getCommand());
+        //    } else {
+        //        caller.message("Found manager: " + manager.getMeta("environment"));
+        //    }
+        // }
     }
 
     @CommandDeclaration(command = "test", usage = "/test [word]")

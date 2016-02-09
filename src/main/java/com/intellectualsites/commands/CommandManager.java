@@ -9,6 +9,7 @@ import com.intellectualsites.commands.util.StringUtil;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Pattern;
 
 /**
  * This manages all commands, and
@@ -18,6 +19,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author Sauilitired
  */
 public class CommandManager {
+
+    private static final Pattern PATTERN_ON_SPACE = Pattern.compile(" ", Pattern.LITERAL);
 
     private final Map<String, String> metaMap;
     private final ManagerOptions managerOptions;
@@ -100,90 +103,108 @@ public class CommandManager {
         return this.commands.values();
     }
 
-    final public int handle(CommandCaller caller, String input) {
-        // If we want to use the prefix, then this will make sure it's there
-        // Could be used to separate commands from chat, etc
-        if (managerOptions.getRequirePrefix() && initialCharacter != null && !StringUtil.startsWith(initialCharacter, input)) {
-            return CommandHandlingOutput.NOT_COMMAND;
-        }
-        // If there is an initial character set, and it's present - remove it
-        if (initialCharacter != null && StringUtil.startsWith(initialCharacter, input)) {
-            input = StringUtil.replaceFirst(initialCharacter, input);
-        }
-        // Now let's split the command up
-        // into labels and arguments
-        String[] parts = input.split(" ");
-        String[] args;
-        String command = parts[0].toLowerCase();
-        if (parts.length == 1) {
-            args = new String[0];
-        } else {
-            args = new String[parts.length - 1];
-            System.arraycopy(parts, 1, args, 0, args.length);
-        }
-        // Let's fetch the command
-        Command cmd = null;
-        if (commands.containsKey(command)) {
-            cmd = commands.get(command);
-        } else if (aliasMapping.containsKey(command)) {
-            cmd = commands.get(aliasMapping.get(command));
-        }
-        if (cmd == null) {
-            return CommandHandlingOutput.NOT_FOUND;
-        }
-        if (!cmd.getRequiredType().isInstance(caller.getSuperCaller())) {
-            return CommandHandlingOutput.CALLER_OF_WRONG_TYPE;
-        }
-        // if (!caller.hasPermission(cmd.getPermission())) {
-        //     return CommandHandlingOutput.NOT_PERMITTED;
-        // }
-        boolean permitted = true;
-        if (managerOptions.getUseAdvancedPermissions()) {
-            permitted = AdvancedPermission.getAdvancedPermission(cmd, managerOptions.getPermissionChecker()).isPermitted(caller);
-        } else {
-            permitted = SimplePermission.getSimplePermission(cmd).isPermitted(caller);
-        }
-        if (!permitted) {
-            return CommandHandlingOutput.NOT_PERMITTED;
-        }
-        // Now the fun stuff is beginning :D
-        Map<String, Argument> requiredArguments = cmd.getRequiredArguments();
-        Map<String, Object> valueMapping = new HashMap<String, Object>();
-        if (requiredArguments.size() > 0) {
-            boolean success = true;
-            if (args.length < requiredArguments.size()) {
-                success = false;
+    final public CommandResult handle(CommandCaller caller, String input) {
+        CommandResult.CommandResultBuilder commandResultBuilder = new CommandResult.CommandResultBuilder();
+        commandResultBuilder.setCaller(caller);
+        commandResultBuilder.setManager(this);
+        commandResultBuilder.setInput(input);
+
+        scope:
+        {
+            // If we want to use the prefix, then this will make sure it's there
+            // Could be used to separate commands from chat, etc
+            if (managerOptions.getRequirePrefix() && initialCharacter != null && !StringUtil.startsWith(initialCharacter, input)) {
+                commandResultBuilder.setCommandResult(CommandHandlingOutput.NOT_COMMAND);
+                break scope;
+            }
+            // If there is an initial character set, and it's present - remove it
+            if (initialCharacter != null && StringUtil.startsWith(initialCharacter, input)) {
+                input = StringUtil.replaceFirst(initialCharacter, input);
+            }
+            // Now let's split the command up
+            // into labels and arguments
+            String[] parts = PATTERN_ON_SPACE.split(input);
+            String[] args;
+            String command = parts[0].toLowerCase();
+            if (parts.length == 1) {
+                args = new String[0];
             } else {
-                int index = 0;
-                for (Map.Entry<String, Argument> requiredArgument : requiredArguments.entrySet()) {
-                    Object value = requiredArgument.getValue().parse(args[index++]);
-                    if (value == null) {
-                        success = false;
-                        break;
-                    } else {
-                        valueMapping.put(requiredArgument.getValue().getName(), value);
+                args = new String[parts.length - 1];
+                System.arraycopy(parts, 1, args, 0, args.length);
+            }
+            // Let's fetch the command
+            Command cmd = null;
+            if (commands.containsKey(command)) {
+                cmd = commands.get(command);
+            } else if (aliasMapping.containsKey(command)) {
+                cmd = commands.get(aliasMapping.get(command));
+            }
+
+            commandResultBuilder.setCommand(cmd);
+
+            if (cmd == null) {
+                commandResultBuilder.setCommandResult(CommandHandlingOutput.NOT_FOUND);
+                break scope;
+            }
+            if (!cmd.getRequiredType().isInstance(caller.getSuperCaller())) {
+                commandResultBuilder.setCommandResult(CommandHandlingOutput.CALLER_OF_WRONG_TYPE);
+                break scope;
+            }
+
+            boolean permitted;
+            if (managerOptions.getUseAdvancedPermissions()) {
+                permitted = AdvancedPermission.getAdvancedPermission(cmd, managerOptions.getPermissionChecker()).isPermitted(caller);
+            } else {
+                permitted = SimplePermission.getSimplePermission(cmd).isPermitted(caller);
+            }
+            if (!permitted) {
+                commandResultBuilder.setCommandResult(CommandHandlingOutput.NOT_PERMITTED);
+                break scope;
+            }
+            // Now the fun stuff is beginning :D
+            Map<String, Argument> requiredArguments = cmd.getRequiredArguments();
+            Map<String, Object> valueMapping = new HashMap<String, Object>();
+            if (requiredArguments.size() > 0) {
+                boolean success = true;
+                if (args.length < requiredArguments.size()) {
+                    success = false;
+                } else {
+                    int index = 0;
+                    for (Map.Entry<String, Argument> requiredArgument : requiredArguments.entrySet()) {
+                        Object value = requiredArgument.getValue().parse(args[index++]);
+                        if (value == null) {
+                            success = false;
+                            break;
+                        } else {
+                            valueMapping.put(requiredArgument.getValue().getName(), value);
+                        }
                     }
                 }
-            }
-            if (!success) {
-                caller.sendRequiredArgumentsList(this, cmd, requiredArguments.values(), cmd.getUsage());
-                return CommandHandlingOutput.WRONG_USAGE;
-            }
-        }
-        try {
-            boolean a = cmd.onCommand(caller, args, valueMapping);
-            if (!a) {
-                String usage = cmd.getUsage();
-                if (usage != null && !usage.isEmpty()) {
-                    caller.message(usage);
+                if (!success) {
+                    caller.sendRequiredArgumentsList(this, cmd, requiredArguments.values(), cmd.getUsage());
+                    commandResultBuilder.setCommandResult(CommandHandlingOutput.WRONG_USAGE);
+                    break scope;
                 }
-                return CommandHandlingOutput.WRONG_USAGE;
             }
-        } catch(final Throwable t) {
-            t.printStackTrace();
-            return CommandHandlingOutput.ERROR;
+            try {
+                boolean a = cmd.onCommand(caller, args, valueMapping);
+                if (!a) {
+                    String usage = cmd.getUsage();
+                    if (usage != null && !usage.isEmpty()) {
+                        caller.message(usage);
+                    }
+                    commandResultBuilder.setCommandResult(CommandHandlingOutput.WRONG_USAGE);
+                    break scope;
+                }
+            } catch (final Throwable t) {
+                t.printStackTrace();
+                commandResultBuilder.setCommandResult(CommandHandlingOutput.ERROR);
+                break scope;
+            }
+            commandResultBuilder.setCommandResult(CommandHandlingOutput.SUCCESS);
         }
-        return CommandHandlingOutput.SUCCESS;
+
+        return commandResultBuilder.build();
     }
 
     final public ManagerOptions getManagerOptions() {

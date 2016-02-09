@@ -4,14 +4,19 @@ import com.intellectualsites.commands.permission.AdvancedPermission;
 
 public class ManagerOptions {
 
-    private boolean requireInitialCharacter, useAdvancedPermissions, registerToCloud;
+    private boolean requireInitialCharacter, useAdvancedPermissions, registerToCloud, findCloseMatches;
     private AdvancedPermission.PermissionChecker permissionChecker;
 
     public ManagerOptions() {
         this.requireInitialCharacter = true;
         this.permissionChecker = null;
         this.useAdvancedPermissions = false;
+        this.findCloseMatches = true;
         this.registerToCloud = true;
+    }
+
+    public boolean getFindCloseMatches() {
+        return this.findCloseMatches;
     }
 
     public boolean getRegisterToCloud() {
@@ -32,6 +37,11 @@ public class ManagerOptions {
 
     public ManagerOptions setRegisterToCloud(boolean registerToCloud) {
         this.registerToCloud = true;
+        return this;
+    }
+
+    public ManagerOptions getFindCloseMatches(boolean findCloseMatches) {
+        this.findCloseMatches = findCloseMatches;
         return this;
     }
 

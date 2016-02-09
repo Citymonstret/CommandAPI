@@ -104,7 +104,7 @@ public abstract class Command extends CommandManager {
 
     public abstract boolean onCommand(CommandInstance instance);
 
-    final public int handle(CommandCaller caller, String[] args) {
+    final public CommandResult handle(CommandCaller caller, String[] args) {
         if (args.length == 0) {
             return super.handle(caller, "");
         }

@@ -10,6 +10,8 @@ import java.util.Map;
  */
 public class CommandHandlingOutput {
 
+    public static int OUTPUT_BUILD_FAILURE = -99;
+
     /**
      * The caller was of the wrong type
      */
