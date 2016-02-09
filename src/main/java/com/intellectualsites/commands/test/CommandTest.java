@@ -24,6 +24,14 @@ public class CommandTest {
                     }
                 });
         manager.handle(caller, "test banana 10");
+
+        for (CommandManager command : CommandCloud.get('/')) {
+            if (command instanceof Command) {
+                caller.message("Found command: /" + ((Command) command).getCommand());
+            } else {
+                caller.message("Found manager: " + manager.getMeta("environment"));
+            }
+        }
     }
 
     @CommandDeclaration(command = "test", usage = "/test [word]")

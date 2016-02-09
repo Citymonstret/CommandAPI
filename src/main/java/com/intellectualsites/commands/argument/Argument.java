@@ -1,7 +1,5 @@
 package com.intellectualsites.commands.argument;
 
-import com.intellectualsites.commands.argument.ArgumentType;
-
 public class Argument<T> {
 
     private final String name;

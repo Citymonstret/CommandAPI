@@ -19,10 +19,11 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class CommandManager {
 
+    private final Map<String, String> metaMap;
     private final ManagerOptions managerOptions;
     private final Map<String, Command> commands;
     private final Map<String, String> aliasMapping;
-    private final Character initialCharacter;
+    private Character initialCharacter;
 
     /**
      * Default constructor,
@@ -53,18 +54,31 @@ public class CommandManager {
         this.managerOptions = new ManagerOptions();
         this.commands = new ConcurrentHashMap<String, Command>();
         this.aliasMapping = new ConcurrentHashMap<String, String>();
+        this.metaMap = new HashMap<String, String>();
         this.initialCharacter = initialCharacter;
         if (commands != null) {
             for (Command command : commands) {
                 addCommand(command);
             }
         }
+        this.setMeta("environment", "standalone");
     }
 
     final public void addCommand(final Command command) {
+        if (command.getInitialCharacter() == null) {
+            command.setInitialCharacter(getInitialCharacter());
+            command.getManagerOptions().setRequirePrefix(false);
+        }
         this.commands.put(command.getCommand().toLowerCase(), command);
         for (String alias : command.getAliases()) {
             aliasMapping.put(alias.toLowerCase(), command.getCommand().toLowerCase());
+        }
+        if (managerOptions.getRegisterToCloud()) {
+            if (!hasMeta("cloudRegistered")) {
+                CommandCloud.add(this);
+                setMeta("cloudRegistered", "true");
+            }
+            CommandCloud.add(command);
         }
     }
 
@@ -176,7 +190,30 @@ public class CommandManager {
         return this.managerOptions;
     }
 
-    final public char getInitialCharacter() {
+    final public boolean hasMeta(String key) {
+        return this.metaMap.containsKey(key);
+    }
+
+    final public void removeMeta(String key) {
+        this.metaMap.remove(key);
+    }
+
+    final public String getMeta(String key) {
+        return this.metaMap.get(key);
+    }
+
+    final public void setMeta(String key, String value) {
+        if (value == null && hasMeta(key)) {
+            removeMeta(key);
+        }
+        this.metaMap.put(key, value);
+    }
+
+    final public Character getInitialCharacter() {
         return this.initialCharacter;
+    }
+
+    public void setInitialCharacter(Character initialCharacter) {
+        this.initialCharacter = initialCharacter;
     }
 }

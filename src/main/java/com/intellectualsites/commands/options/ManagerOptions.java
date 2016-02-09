@@ -4,13 +4,18 @@ import com.intellectualsites.commands.permission.AdvancedPermission;
 
 public class ManagerOptions {
 
-    private boolean requireInitialCharacter, useAdvancedPermissions;
+    private boolean requireInitialCharacter, useAdvancedPermissions, registerToCloud;
     private AdvancedPermission.PermissionChecker permissionChecker;
 
     public ManagerOptions() {
         this.requireInitialCharacter = true;
         this.permissionChecker = null;
         this.useAdvancedPermissions = false;
+        this.registerToCloud = true;
+    }
+
+    public boolean getRegisterToCloud() {
+        return this.registerToCloud;
     }
 
     public boolean getRequirePrefix() {
@@ -23,6 +28,11 @@ public class ManagerOptions {
 
     public AdvancedPermission.PermissionChecker getPermissionChecker() {
         return this.permissionChecker;
+    }
+
+    public ManagerOptions setRegisterToCloud(boolean registerToCloud) {
+        this.registerToCloud = true;
+        return this;
     }
 
     public ManagerOptions setUseAdvancedPermissions(boolean useAdvancedPermissions) {
