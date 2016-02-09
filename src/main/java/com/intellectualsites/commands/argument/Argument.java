@@ -1,6 +1,6 @@
-package com.intellectualsites.commands.util;
+package com.intellectualsites.commands.argument;
 
-import com.intellectualsites.commands.ArgumentType;
+import com.intellectualsites.commands.argument.ArgumentType;
 
 public class Argument<T> {
 

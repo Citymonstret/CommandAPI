@@ -1,4 +1,4 @@
-package com.intellectualsites.commands;
+package com.intellectualsites.commands.argument;
 
 public abstract class ArgumentType<T> {
 
@@ -31,7 +31,9 @@ public abstract class ArgumentType<T> {
             Integer value = null;
             try {
                 value = java.lang.Integer.parseInt(in);
-            } catch(final Exception ignored) {}
+            } catch(final Exception ignored) {
+                ignored.printStackTrace();
+            }
             return value;
         }
     };

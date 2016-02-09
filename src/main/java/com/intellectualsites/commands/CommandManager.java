@@ -2,7 +2,9 @@ package com.intellectualsites.commands;
 
 import com.intellectualsites.commands.callers.CommandCaller;
 import com.intellectualsites.commands.options.ManagerOptions;
-import com.intellectualsites.commands.util.Argument;
+import com.intellectualsites.commands.permission.AdvancedPermission;
+import com.intellectualsites.commands.permission.SimplePermission;
+import com.intellectualsites.commands.argument.Argument;
 import com.intellectualsites.commands.util.StringUtil;
 
 import java.util.*;
@@ -118,7 +120,16 @@ public class CommandManager {
         if (!cmd.getRequiredType().isInstance(caller.getSuperCaller())) {
             return CommandHandlingOutput.CALLER_OF_WRONG_TYPE;
         }
-        if (!caller.hasPermission(cmd.getPermission())) {
+        // if (!caller.hasPermission(cmd.getPermission())) {
+        //     return CommandHandlingOutput.NOT_PERMITTED;
+        // }
+        boolean permitted = true;
+        if (managerOptions.getUseAdvancedPermissions()) {
+            permitted = AdvancedPermission.getAdvancedPermission(cmd, managerOptions.getPermissionChecker()).isPermitted(caller);
+        } else {
+            permitted = SimplePermission.getSimplePermission(cmd).isPermitted(caller);
+        }
+        if (!permitted) {
             return CommandHandlingOutput.NOT_PERMITTED;
         }
         // Now the fun stuff is beginning :D

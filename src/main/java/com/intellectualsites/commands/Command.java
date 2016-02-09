@@ -1,11 +1,13 @@
 package com.intellectualsites.commands;
 
+import com.intellectualsites.commands.argument.ArgumentType;
 import com.intellectualsites.commands.callers.CommandCaller;
-import com.intellectualsites.commands.util.Argument;
+import com.intellectualsites.commands.argument.Argument;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public abstract class Command extends CommandManager {
@@ -13,7 +15,7 @@ public abstract class Command extends CommandManager {
     private Class requiredType = Object.class;
     private String command, usage = "", description = "", permission = "";
     private String[] aliases = new String[0];
-    protected Map<String, Argument> requiredArguments = new HashMap<String, Argument>();
+    protected Map<String, Argument> requiredArguments = new LinkedHashMap<String, Argument>();
 
     public Command() {
         super(null, new ArrayList<Command>());
@@ -96,7 +98,11 @@ public abstract class Command extends CommandManager {
         return this.command.hashCode();
     }
 
-    public abstract boolean onCommand(CommandCaller caller, String[] arguments, Map<String, Object> valueMapping);
+    public boolean onCommand(CommandCaller caller, String[] arguments, Map<String, Object> valueMapping) {
+        return this.onCommand(new CommandInstance(caller, arguments, valueMapping));
+    }
+
+    public abstract boolean onCommand(CommandInstance instance);
 
     final public int handle(CommandCaller caller, String[] args) {
         if (args.length == 0) {
@@ -119,7 +125,7 @@ public abstract class Command extends CommandManager {
     }
 
     final public String getPermission() {
-        return this.permission;
+        return this.permission.isEmpty() ? this.command : this.permission;
     }
 
     final public String getDescription() {
