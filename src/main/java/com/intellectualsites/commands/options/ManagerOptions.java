@@ -7,6 +7,7 @@ public class ManagerOptions {
     private boolean requireInitialCharacter, useAdvancedPermissions,
             registerToCloud, findCloseMatches, printStacktrace;
     private AdvancedPermission.PermissionChecker permissionChecker;
+    private String usageFormat;
 
     public ManagerOptions() {
         this.requireInitialCharacter = true;
@@ -15,6 +16,11 @@ public class ManagerOptions {
         this.findCloseMatches = true;
         this.registerToCloud = true;
         this.printStacktrace = true;
+        this.usageFormat = "Command Usage: %usage";
+    }
+
+    public String getUsageFormat() {
+        return this.usageFormat;
     }
 
     public boolean getPrintStacktrace() {
@@ -39,6 +45,11 @@ public class ManagerOptions {
 
     public AdvancedPermission.PermissionChecker getPermissionChecker() {
         return this.permissionChecker;
+    }
+
+    public ManagerOptions setUsageFormat(String format) {
+        this.usageFormat = format;
+        return this;
     }
 
     public ManagerOptions setPrintStacktrace(boolean printStacktrace) {

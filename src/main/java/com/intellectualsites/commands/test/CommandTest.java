@@ -54,7 +54,7 @@ public class CommandTest {
         // Let's test the "get closets match" system
         debug(caller, manager.handle(caller, "tlest banana 10"));
         // Let's try to call it
-        debug(caller, manager.handle(caller, "test banana 10"));
+        debug(caller, manager.handle(caller, "test banana 10 Cows"));
 
         //
         // Test the pagination command type
@@ -104,13 +104,13 @@ public class CommandTest {
 
         TestCommand() {
             withArgument("word", ArgumentType.String, "A word");
-            withArgument("number", ArgumentType.Integer, "A number");
+            withArgument("rest", ArgumentType.MultiString, "More strings");
         }
 
         @Override
         public boolean onCommand(CommandInstance instance) {
             System.out.println("The word is: " + instance.getString("word"));
-            System.out.println("The number is: " + instance.getInteger("number"));
+            System.out.println("And the rest: " + instance.getString("rest"));
             return true;
         }
     }

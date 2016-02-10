@@ -1,23 +1,25 @@
 package com.intellectualsites.commands.argument;
 
+import java.time.Instant;
+
 public abstract class ArgumentType<T> {
 
-    private final String name;
+    private final java.lang.String name;
     private final T example;
 
-    public ArgumentType(String name, T example) {
+    public ArgumentType(java.lang.String name, T example) {
         this.name = name;
         this.example = example;
     }
 
-    public abstract T parse(String in);
+    public abstract T parse(java.lang.String in);
 
     @Override
-    public final String toString() {
+    public final java.lang.String toString() {
         return this.getName();
     }
 
-    public final String getName() {
+    public final java.lang.String getName() {
         return this.name;
     }
 
@@ -27,7 +29,7 @@ public abstract class ArgumentType<T> {
 
     public static final ArgumentType<Integer> Integer = new ArgumentType<java.lang.Integer>("int", 16) {
         @Override
-        public Integer parse(String in) {
+        public Integer parse(java.lang.String in) {
             Integer value = null;
             try {
                 value = java.lang.Integer.parseInt(in);
@@ -40,7 +42,7 @@ public abstract class ArgumentType<T> {
 
     public static final ArgumentType<Boolean> Boolean = new ArgumentType<java.lang.Boolean>("boolean", true) {
         @Override
-        public Boolean parse(String in) {
+        public Boolean parse(java.lang.String in) {
             Boolean value = null;
             if (in.equalsIgnoreCase("true") || in.equalsIgnoreCase("Yes") || in.equalsIgnoreCase("1")) {
                 value = true;
@@ -51,10 +53,26 @@ public abstract class ArgumentType<T> {
         }
     };
 
-    public static final ArgumentType<String> String = new ArgumentType<java.lang.String>("String", "Example") {
+    public static final MultiString MultiString = new MultiString();
+
+    public static class MultiString extends ArgumentType<String> implements InstantArray {
+
+        public MultiString() {
+            super("strings", "Multiple words...");
+        }
+
+        @Override
+        public String parse(String in) {
+            return in;
+        }
+    }
+
+    public static final ArgumentType<java.lang.String> String = new ArgumentType<java.lang.String>("string", "Example") {
         @Override
         public String parse(String in) {
             return in;
         }
     };
+
+    public interface InstantArray {}
 }

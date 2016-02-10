@@ -1,5 +1,6 @@
 package com.intellectualsites.commands;
 
+import com.intellectualsites.commands.argument.ArgumentType;
 import com.intellectualsites.commands.callers.CommandCaller;
 import com.intellectualsites.commands.options.ManagerOptions;
 import com.intellectualsites.commands.permission.AdvancedPermission;
@@ -170,7 +171,20 @@ public class CommandManager {
                 } else {
                     int index = 0;
                     for (Map.Entry<String, Argument> requiredArgument : requiredArguments.entrySet()) {
-                        Object value = requiredArgument.getValue().parse(args[index++]);
+                        Object value;
+                        if (requiredArgument.getValue().getArgumentType() instanceof ArgumentType.InstantArray) {
+                            StringBuilder cache = new StringBuilder();
+                            for (int i = index; i < args.length; i++) {
+                                if (cache.toString().isEmpty()) {
+                                    cache.append(args[i]);
+                                } else {
+                                    cache.append(" ").append(args[i]);
+                                }
+                            }
+                            value = cache.toString();
+                        } else {
+                            value = requiredArgument.getValue().parse(args[index++]);
+                        }
                         if (value == null) {
                             success = false;
                             break;
@@ -190,7 +204,7 @@ public class CommandManager {
                 if (!a) {
                     String usage = cmd.getUsage();
                     if (usage != null && !usage.isEmpty()) {
-                        caller.message(usage);
+                        caller.message(getManagerOptions().getUsageFormat().replace("%usage", usage));
                     }
                     commandResultBuilder.setCommandResult(CommandHandlingOutput.WRONG_USAGE);
                     break scope;

@@ -10,43 +10,43 @@ import java.util.Map;
  */
 public class CommandHandlingOutput {
 
-    public static int OUTPUT_BUILD_FAILURE = -99;
+    public static final int OUTPUT_BUILD_FAILURE = -99;
 
     /**
      * The caller was of the wrong type
      */
-    public static int CALLER_OF_WRONG_TYPE = -6;
+    public static final int CALLER_OF_WRONG_TYPE = -6;
 
     /**
      * Not a command (filtered out)
      */
-    public static int NOT_COMMAND = -5;
+    public static final int NOT_COMMAND = -5;
 
     /**
      * There is no such command
      */
-    public static int NOT_FOUND = -4;
+    public static final int NOT_FOUND = -4;
 
     /**
      * The caller isn't permitted to call
      * the command
      */
-    public static int NOT_PERMITTED = -3;
+    public static final int NOT_PERMITTED = -3;
 
     /**
      * Something went wrong
      */
-    public static int ERROR = -2;
+    public static final int ERROR = -2;
 
     /**
      * Incorrect command usage
      */
-    public static int WRONG_USAGE = -1;
+    public static final int WRONG_USAGE = -1;
 
     /**
      * Everything went well
      */
-    public static int SUCCESS = 1;
+    public static final int SUCCESS = 1;
 
     private static Map<Integer, String> nameCache = new HashMap<Integer, String>();
 
