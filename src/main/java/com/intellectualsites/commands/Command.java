@@ -16,6 +16,7 @@ public abstract class Command extends CommandManager {
     private String command, usage = "", description = "", permission = "";
     private String[] aliases = new String[0];
     protected Map<String, Argument> requiredArguments = new LinkedHashMap<String, Argument>();
+    private Argument context = null;
 
     public Command() {
         super(null, new ArrayList<Command>());
@@ -104,7 +105,7 @@ public abstract class Command extends CommandManager {
 
     public abstract boolean onCommand(CommandInstance instance);
 
-    final public CommandResult handle(CommandCaller caller, String[] args) {
+    public CommandResult handle(CommandCaller caller, String[] args) {
         if (args.length == 0) {
             return super.handle(caller, "");
         }
@@ -138,6 +139,19 @@ public abstract class Command extends CommandManager {
 
     final public Map<String, Argument> getRequiredArguments() {
         return new HashMap<String, Argument>(this.requiredArguments);
+    }
+
+    public boolean hasContext() {
+        return this.context != null;
+    }
+
+    public Argument getContext() {
+        return this.context;
+    }
+
+    public <T> Command withContext(String name, ArgumentType<T> type, String desc) {
+        this.context = new Argument<T>(name, type, desc);
+        return this;
     }
 
     public <T> Command withArgument(String name, ArgumentType<T> argumentType, String desc) {
