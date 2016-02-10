@@ -54,7 +54,7 @@ public class CommandTest {
         // Let's test the "get closets match" system
         debug(caller, manager.handle(caller, "tlest banana 10"));
         // Let's try to call it
-        debug(caller, manager.handle(caller, "test banana 10 Cows"));
+        debug(caller, manager.handle(caller, "HUNDIS test banana 10 Cows"));
 
         //
         // Test the pagination command type
@@ -105,15 +105,30 @@ public class CommandTest {
         TestCommand() {
             withArgument("word", ArgumentType.String, "A word");
             withArgument("rest", ArgumentType.MultiString, "More strings");
+            withContext("dog", DogType, "A dog name");
         }
 
         @Override
         public boolean onCommand(CommandInstance instance) {
+            Dog context = instance.getValue("dog", Dog.class);
+            if (context != null) {
+                System.out.println("Context was set: " + context);
+            } else {
+                System.out.println("Context not specified");
+            }
+
             System.out.println("The word is: " + instance.getString("word"));
             System.out.println("And the rest: " + instance.getString("rest"));
             return true;
         }
     }
+
+    public static ArgumentType<Dog> DogType = new ArgumentType<Dog>("dog", new Dog("Test")) {
+        @Override
+        public Dog parse(String in) {
+            return new Dog(in);
+        }
+    };
 
     private static void debug(CommandCaller caller, CommandResult result) {
         caller.message("Result: " + CommandHandlingOutput.nameField(result.getCommandResult()));

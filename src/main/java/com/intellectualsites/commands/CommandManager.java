@@ -126,12 +126,7 @@ public class CommandManager {
             String[] parts = PATTERN_ON_SPACE.split(input);
             String[] args;
             String command = parts[0].toLowerCase();
-            if (parts.length == 1) {
-                args = new String[0];
-            } else {
-                args = new String[parts.length - 1];
-                System.arraycopy(parts, 1, args, 0, args.length);
-            }
+
             // Let's fetch the command
             Command cmd = null;
             if (commands.containsKey(command)) {
@@ -140,12 +135,45 @@ public class CommandManager {
                 cmd = commands.get(aliasMapping.get(command));
             }
 
-            commandResultBuilder.setCommand(cmd);
+            Map<String, Object> valueMapping = new HashMap<String, Object>();
+            boolean contextFetched = false;
 
-            if (cmd == null) {
+            if (cmd == null) commandFetch: {
+                if (parts.length > 1) {
+                    String tempContext = command;
+                    command = parts[1].toLowerCase();
+
+                    if (commands.containsKey(command)) {
+                        cmd = commands.get(command);
+                    } else if (aliasMapping.containsKey(command)) {
+                        cmd = commands.get(aliasMapping.get(command));
+                    }
+
+                    if (cmd != null && cmd.hasContext()) {
+                        Object val = cmd.getContext().parse(tempContext);
+                        valueMapping.put(cmd.getContext().getName(), val);
+                        contextFetched = true;
+                        break commandFetch;
+                    }
+                }
                 commandResultBuilder.setCommandResult(CommandHandlingOutput.NOT_FOUND);
                 break scope;
             }
+
+            commandResultBuilder.setCommand(cmd);
+
+            if (parts.length == 1) {
+                args = new String[0];
+            } else {
+                if (!contextFetched) {
+                    args = new String[parts.length - 1];
+                    System.arraycopy(parts, 1, args, 0, args.length);
+                } else {
+                    args = new String[parts.length - 2];
+                    System.arraycopy(parts, 2, args, 0, args.length);
+                }
+            }
+
             if (!cmd.getRequiredType().isInstance(caller.getSuperCaller())) {
                 commandResultBuilder.setCommandResult(CommandHandlingOutput.CALLER_OF_WRONG_TYPE);
                 break scope;
@@ -163,7 +191,6 @@ public class CommandManager {
             }
             // Now the fun stuff is beginning :D
             Map<String, Argument> requiredArguments = cmd.getRequiredArguments();
-            Map<String, Object> valueMapping = new HashMap<String, Object>();
             if (requiredArguments.size() > 0) {
                 boolean success = true;
                 if (args.length < requiredArguments.size()) {
