@@ -5,7 +5,8 @@ import com.intellectualsites.commands.permission.AdvancedPermission;
 public class ManagerOptions {
 
     private boolean requireInitialCharacter, useAdvancedPermissions,
-            registerToCloud, findCloseMatches, printStacktrace;
+            registerToCloud, findCloseMatches, printStacktrace, useMessageProvider;
+    private MessageProvider messageProvider;
     private AdvancedPermission.PermissionChecker permissionChecker;
     private String usageFormat;
 
@@ -16,7 +17,13 @@ public class ManagerOptions {
         this.findCloseMatches = true;
         this.registerToCloud = true;
         this.printStacktrace = true;
+        this.useMessageProvider = false;
+        this.messageProvider = null;
         this.usageFormat = "Command Usage: %usage";
+    }
+
+    public MessageProvider getMessageProvider() {
+        return this.messageProvider;
     }
 
     public String getUsageFormat() {
@@ -67,6 +74,16 @@ public class ManagerOptions {
         return this;
     }
 
+    public ManagerOptions setUseMessageProvider(final boolean useMessageProvider) {
+        this.useMessageProvider = useMessageProvider;
+        return this;
+    }
+
+    public ManagerOptions setMessageProvider(final MessageProvider messageProvider) {
+        this.messageProvider = messageProvider;
+        return this;
+    }
+
     public ManagerOptions setUseAdvancedPermissions(boolean useAdvancedPermissions) {
         this.useAdvancedPermissions = useAdvancedPermissions;
         return this;
@@ -80,5 +97,9 @@ public class ManagerOptions {
     public ManagerOptions setRequirePrefix(boolean requirePrefix) {
         this.requireInitialCharacter = requirePrefix;
         return this;
+    }
+
+    public boolean getUseMessageProvider() {
+        return useMessageProvider;
     }
 }

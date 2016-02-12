@@ -73,6 +73,10 @@ public class CommandManager {
             command.setInitialCharacter(getInitialCharacter());
             command.getManagerOptions().setRequirePrefix(false);
         }
+        if (getManagerOptions().getUseMessageProvider()) {
+            command.getManagerOptions().setUseMessageProvider(true);
+            command.getManagerOptions().setMessageProvider(getManagerOptions().getMessageProvider());
+        }
         this.commands.put(command.getCommand().toLowerCase(), command);
         for (String alias : command.getAliases()) {
             aliasMapping.put(alias.toLowerCase(), command.getCommand().toLowerCase());

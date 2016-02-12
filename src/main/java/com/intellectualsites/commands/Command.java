@@ -122,6 +122,9 @@ public abstract class Command extends CommandManager {
     }
 
     final public String getUsage() {
+        if (getManagerOptions().getUseMessageProvider()) {
+            return getManagerOptions().getMessageProvider().getUsage(this.usage);
+        }
         return this.usage;
     }
 
@@ -130,6 +133,9 @@ public abstract class Command extends CommandManager {
     }
 
     final public String getDescription() {
+        if (getManagerOptions().getUseMessageProvider()) {
+            return getManagerOptions().getMessageProvider().getDescription(this.usage);
+        }
         return this.description;
     }
 
