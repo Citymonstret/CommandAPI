@@ -1,11 +1,14 @@
 package com.intellectualsites.commands.test;
 
 import com.intellectualsites.commands.*;
-import com.intellectualsites.commands.argument.ArgumentType;
 import com.intellectualsites.commands.callers.CommandCaller;
 import com.intellectualsites.commands.callers.SystemCaller;
+import com.intellectualsites.commands.pagination.ItemGetter;
 import com.intellectualsites.commands.pagination.PaginatedCommand;
-import com.intellectualsites.commands.pagination.PaginationFactory;
+import com.intellectualsites.commands.parser.Parser;
+import com.intellectualsites.commands.parser.ParserResult;
+import com.intellectualsites.commands.parser.impl.IntegerParser;
+import com.intellectualsites.commands.parser.impl.StringParser;
 import com.intellectualsites.commands.permission.AdvancedPermission;
 
 import java.util.ArrayList;
@@ -79,9 +82,14 @@ public class CommandTest {
 
     public static class PaginationTest extends PaginatedCommand<Dog> {
 
-        public PaginationTest(List<Dog> items) {
-            super(Dog.class, items, 10, "dogs", "/dogs [page]", "List dogs", "dogs.permission", new String[0], Object.class);
-            withArgument("page", ArgumentType.Integer, "Dog page");
+        public PaginationTest(final List<Dog> items) {
+            super(Dog.class, new ItemGetter<Dog>() {
+                @Override
+                public List<Dog> getItems() {
+                    return items;
+                }
+            }, 10, "dogs", "/dogs [page]", "List dogs", "dogs.permission", new String[0], Object.class);
+            withArgument("page", new IntegerParser(0, Integer.MAX_VALUE), "Dog page");
         }
 
         @Override
@@ -103,31 +111,31 @@ public class CommandTest {
     public static class TestCommand extends Command {
 
         TestCommand() {
-            withArgument("word", ArgumentType.String, "A word");
-            withArgument("rest", ArgumentType.MultiString, "More strings");
+            withArgument("word", new StringParser(), "A word");
             withContext("dog", DogType, "A dog name");
         }
 
         @Override
         public boolean onCommand(CommandInstance instance) {
-            Dog context = instance.getValue("dog", Dog.class);
+            ParserResult<Dog> context = (ParserResult<Dog>) instance.getValue("dog", ParserResult.class);
             if (context != null) {
-                System.out.println("Context was set: " + context);
+                System.out.println("Context was set: " + context.getResult());
             } else {
                 System.out.println("Context not specified");
             }
 
             System.out.println("The word is: " + instance.getString("word"));
-            System.out.println("And the rest: " + instance.getString("rest"));
             return true;
         }
     }
 
-    public static ArgumentType<Dog> DogType = new ArgumentType<Dog>("dog", new Dog("Test")) {
+    public static Parser<Dog> DogType = new Parser<Dog>("dog", new Dog("Test")) {
+
         @Override
-        public Dog parse(String in) {
-            return new Dog(in);
+        public ParserResult<Dog> parse(String in) {
+            return new ParserResult<>(new Dog(in));
         }
+
     };
 
     private static void debug(CommandCaller caller, CommandResult result) {

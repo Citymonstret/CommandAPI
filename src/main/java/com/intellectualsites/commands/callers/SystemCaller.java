@@ -1,7 +1,7 @@
 package com.intellectualsites.commands.callers;
 import com.intellectualsites.commands.Command;
 import com.intellectualsites.commands.CommandManager;
-import com.intellectualsites.commands.argument.Argument;
+import com.intellectualsites.commands.parser.Parserable;
 
 import java.util.Collection;
 
@@ -27,8 +27,8 @@ public class SystemCaller implements CommandCaller {
         StringBuilder builder = new StringBuilder();
         builder.append(cmd.getCommand()).append(" requires ");
         for (Object o: required) {
-            Argument argument = (Argument) o;
-            builder.append(argument.getName()).append(" (").append(argument.getArgumentType().getName()).append("; Example: ").append(argument.getArgumentType().getExample()).append("), ");
+            Parserable parserable = (Parserable) o;
+            builder.append(parserable.getName()).append(" (").append(parserable.getParser().getName()).append("; Example: ").append(parserable.getParser().getExample()).append("), ");
         }
         message(builder.substring(0, builder.length() - 2));
     }

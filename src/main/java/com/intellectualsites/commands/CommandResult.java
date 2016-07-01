@@ -12,13 +12,15 @@ public class CommandResult {
     private Throwable throwable;
     private final int commandResult;
     private String input;
+    private CommandArgumentError commandArgumentError;
 
-    protected CommandResult(String input, CommandManager commandManager, Command command, CommandCaller caller, int commandResult, Throwable throwable) {
+    protected CommandResult(String input, CommandManager commandManager, Command command, CommandCaller caller, int commandResult, Throwable throwable, CommandArgumentError error) {
         this.command = command;
         this.caller = caller;
         this.manager = commandManager;
         this.commandResult = commandResult;
         this.input = input;
+        this.commandArgumentError = error;
 
         if (commandManager.getManagerOptions().getFindCloseMatches()) {
             if (commandResult == CommandHandlingOutput.NOT_FOUND) {
@@ -65,6 +67,10 @@ public class CommandResult {
         return input;
     }
 
+    public CommandArgumentError getCommandArgumentError() {
+        return this.commandArgumentError;
+    }
+
     protected static class CommandResultBuilder {
 
         private int commandResult = CommandHandlingOutput.OUTPUT_BUILD_FAILURE;
@@ -73,8 +79,13 @@ public class CommandResult {
         private Command command = null;
         private String input = "";
         private Throwable throwable = null;
+        private CommandArgumentError commandArgumentError = null;
 
         protected CommandResultBuilder(){}
+
+        public void setCommandArgumentError(final CommandArgumentError error) {
+            this.commandArgumentError = error;
+        }
 
         public void setStacktrace(Throwable throwable) {
             this.throwable = throwable;
@@ -101,7 +112,7 @@ public class CommandResult {
         }
 
         public CommandResult build() {
-            return new CommandResult(input, manager, command, caller, commandResult, throwable);
+            return new CommandResult(input, manager, command, caller, commandResult, throwable, commandArgumentError);
         }
     }
 }

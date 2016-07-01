@@ -12,6 +12,8 @@ public class CommandHandlingOutput {
 
     public static final int OUTPUT_BUILD_FAILURE = -99;
 
+    public static final int ARGUMENT_ERROR = -7;
+
     /**
      * The caller was of the wrong type
      */

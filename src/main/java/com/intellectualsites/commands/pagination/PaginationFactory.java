@@ -8,14 +8,14 @@ public class PaginationFactory<T> {
 
     private List<T> items;
     private int perPage, pageCount;
-    private List<Page> pages;
+    private List<Page<T>> pages;
 
     public PaginationFactory(Class<T> clazz, List<T> items, int perPage) {
         this.items = items;
         this.perPage = perPage;
 
         this.pageCount = Math.max((int) Math.ceil(items.size() / perPage), 1);
-        this.pages = new ArrayList<Page>(pageCount);
+        this.pages = new ArrayList<>(pageCount);
 
         int index = 0;
 
@@ -29,7 +29,7 @@ public class PaginationFactory<T> {
                 t[ii++] = tt;
                 newIndex = i;
             }
-            pages.add(pageNum, new Page(t, pageNum));
+            pages.add(pageNum, new Page<>(t, pageNum));
             index = newIndex + 1;
         }
     }
@@ -39,21 +39,21 @@ public class PaginationFactory<T> {
         return perPage;
     }
 
-    public List<Page> getPages() {
+    public List<Page<T>> getPages() {
         return this.pages;
     }
 
-    public class Page {
+    public static class Page<Type> {
 
-        private T[] items;
+        private Type[] items;
         private int pageNum;
 
-        protected Page(T[] items, int pageNum) {
+        protected Page(Type[] items, int pageNum) {
             this.items = items;
             this.pageNum = pageNum;
         }
 
-        public T[] getItems() {
+        public Type[] getItems() {
             return this.items;
         }
 

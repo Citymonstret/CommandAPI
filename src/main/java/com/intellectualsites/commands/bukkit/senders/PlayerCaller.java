@@ -2,7 +2,7 @@ package com.intellectualsites.commands.bukkit.senders;
 
 import com.intellectualsites.commands.Command;
 import com.intellectualsites.commands.CommandManager;
-import com.intellectualsites.commands.argument.Argument;
+import com.intellectualsites.commands.parser.Parserable;
 import org.bukkit.entity.Player;
 
 import java.util.Collection;
@@ -23,7 +23,7 @@ public class PlayerCaller extends BukkitCommandCaller<Player> {
         return this.player;
     }
 
-    public void sendRequiredArgumentsList(CommandManager manager, Command cmd, Collection<Argument> required, String usage) {
+    public void sendRequiredArgumentsList(CommandManager manager, Command cmd, Collection<Parserable> required, String usage) {
         // TODO Implement
     }
 }

@@ -1,11 +1,12 @@
 package com.intellectualsites.commands;
 
-import com.intellectualsites.commands.argument.ArgumentType;
 import com.intellectualsites.commands.callers.CommandCaller;
 import com.intellectualsites.commands.options.ManagerOptions;
+import com.intellectualsites.commands.parser.InstantArray;
+import com.intellectualsites.commands.parser.ParserResult;
+import com.intellectualsites.commands.parser.Parserable;
 import com.intellectualsites.commands.permission.AdvancedPermission;
 import com.intellectualsites.commands.permission.SimplePermission;
-import com.intellectualsites.commands.argument.Argument;
 import com.intellectualsites.commands.util.StringUtil;
 
 import java.util.*;
@@ -77,13 +78,6 @@ public class CommandManager {
         for (String alias : command.getAliases()) {
             aliasMapping.put(alias.toLowerCase(), command.getCommand().toLowerCase());
         }
-        if (managerOptions.getRegisterToCloud()) {
-            if (!hasMeta("cloudRegistered")) {
-                CommandCloud.add(this);
-                setMeta("cloudRegistered", "true");
-            }
-            CommandCloud.add(command);
-        }
     }
 
     final public boolean createCommand(final Command command) {
@@ -100,8 +94,8 @@ public class CommandManager {
         return false;
     }
 
-    final public Collection<Command> getCommands() {
-        return this.commands.values();
+    final public List<Command> getCommands() {
+        return new ArrayList<>(this.commands.values());
     }
 
     final public CommandResult handle(CommandCaller caller, String input) {
@@ -135,7 +129,7 @@ public class CommandManager {
                 cmd = commands.get(aliasMapping.get(command));
             }
 
-            Map<String, Object> valueMapping = new HashMap<String, Object>();
+            Map<String, Object> valueMapping = new LinkedHashMap<String, Object>();
             boolean contextFetched = false;
 
             if (cmd == null) commandFetch: {
@@ -190,16 +184,19 @@ public class CommandManager {
                 break scope;
             }
             // Now the fun stuff is beginning :D
-            Map<String, Argument> requiredArguments = cmd.getRequiredArguments();
+            Map<Integer, String> order = cmd.getOrder();
+            Map<String, Parserable> requiredArguments = cmd.getRequiredArguments();
             if (requiredArguments.size() > 0) {
                 boolean success = true;
                 if (args.length < requiredArguments.size()) {
                     success = false;
                 } else {
                     int index = 0;
-                    for (Map.Entry<String, Argument> requiredArgument : requiredArguments.entrySet()) {
+                    for (int orderIndex = Integer.MAX_VALUE; orderIndex > Integer.MAX_VALUE - order.size(); orderIndex--) {
+                        String name = order.get(orderIndex);
+                        Parserable parserable = requiredArguments.get(name);
                         Object value;
-                        if (requiredArgument.getValue().getArgumentType() instanceof ArgumentType.InstantArray) {
+                        if (parserable.getParser() instanceof InstantArray) {
                             StringBuilder cache = new StringBuilder();
                             for (int i = index; i < args.length; i++) {
                                 if (cache.toString().isEmpty()) {
@@ -210,18 +207,31 @@ public class CommandManager {
                             }
                             value = cache.toString();
                         } else {
-                            value = requiredArgument.getValue().parse(args[index++]);
+                            // value = parserable.parse(args[index++]);
+                            ParserResult parserResult = parserable.parse(args[index++]);
+                            if (parserResult.isParsed()) {
+                                value = parserResult.getResult();
+                            } else {
+                                commandResultBuilder.setCommandResult(CommandHandlingOutput.ARGUMENT_ERROR);
+                                commandResultBuilder.setCommandArgumentError(new CommandArgumentError(parserResult, parserable));
+                                break scope;
+                            }
                         }
                         if (value == null) {
                             success = false;
                             break;
                         } else {
-                            valueMapping.put(requiredArgument.getValue().getName(), value);
+                            valueMapping.put(name, value);
                         }
                     }
                 }
                 if (!success) {
-                    caller.sendRequiredArgumentsList(this, cmd, requiredArguments.values(), cmd.getUsage());
+                    List<Parserable> list = new ArrayList<Parserable>();
+                    for (int orderIndex = Integer.MAX_VALUE; orderIndex > Integer.MAX_VALUE - order.size(); orderIndex--) {
+                        String name = order.get(orderIndex);
+                        list.add(requiredArguments.get(name));
+                    }
+                    caller.sendRequiredArgumentsList(this, cmd, list, cmd.getUsage());
                     commandResultBuilder.setCommandResult(CommandHandlingOutput.WRONG_USAGE);
                     break scope;
                 }
@@ -243,7 +253,6 @@ public class CommandManager {
             }
             commandResultBuilder.setCommandResult(CommandHandlingOutput.SUCCESS);
         }
-
         return commandResultBuilder.build();
     }
 
