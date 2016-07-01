@@ -7,8 +7,8 @@ import java.util.Map;
 public class CommandInstance {
 
     protected final CommandCaller caller;
-    protected final String[] arguments;
-    protected final Map<String, Object> valueMapping;
+    private final String[] arguments;
+    private final Map<String, Object> valueMapping;
 
     public CommandInstance(final CommandCaller caller, final String[] arguments, final Map<String, Object> valueMapping) {
         this.caller = caller;

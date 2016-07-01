@@ -3,12 +3,13 @@ package com.intellectualsites.commands;
 import com.intellectualsites.commands.parser.ParserResult;
 import com.intellectualsites.commands.parser.Parserable;
 
+@SuppressWarnings("unused")
 public class CommandArgumentError {
 
     private final ParserResult result;
     private final Parserable parserable;
 
-    public CommandArgumentError(final ParserResult parserResult, final Parserable parserable) {
+    CommandArgumentError(final ParserResult parserResult, final Parserable parserable) {
         this.result = parserResult;
         this.parserable = parserable;
     }

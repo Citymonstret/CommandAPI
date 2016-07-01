@@ -8,6 +8,7 @@ import java.util.Map;
  * This is the output, that you can
  * fetch from the command manager
  */
+@SuppressWarnings("all")
 public class CommandHandlingOutput {
 
     public static final int OUTPUT_BUILD_FAILURE = -99;

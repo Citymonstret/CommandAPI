@@ -20,6 +20,7 @@ import java.util.regex.Pattern;
  *
  * @author Sauilitired
  */
+@SuppressWarnings("unused")
 public class CommandManager {
 
     private static final Pattern PATTERN_ON_SPACE = Pattern.compile(" ", Pattern.LITERAL);
@@ -57,9 +58,9 @@ public class CommandManager {
      */
     public CommandManager(Character initialCharacter, List<Command> commands) {
         this.managerOptions = new ManagerOptions();
-        this.commands = new ConcurrentHashMap<String, Command>();
-        this.aliasMapping = new ConcurrentHashMap<String, String>();
-        this.metaMap = new HashMap<String, String>();
+        this.commands = new ConcurrentHashMap<>();
+        this.aliasMapping = new ConcurrentHashMap<>();
+        this.metaMap = new HashMap<>();
         this.initialCharacter = initialCharacter;
         if (commands != null) {
             for (Command command : commands) {
@@ -129,7 +130,7 @@ public class CommandManager {
                 cmd = commands.get(aliasMapping.get(command));
             }
 
-            Map<String, Object> valueMapping = new LinkedHashMap<String, Object>();
+            Map<String, Object> valueMapping = new LinkedHashMap<>();
             boolean contextFetched = false;
 
             if (cmd == null) commandFetch: {
@@ -226,7 +227,7 @@ public class CommandManager {
                     }
                 }
                 if (!success) {
-                    List<Parserable> list = new ArrayList<Parserable>();
+                    List<Parserable> list = new ArrayList<>();
                     for (int orderIndex = Integer.MAX_VALUE; orderIndex > Integer.MAX_VALUE - order.size(); orderIndex--) {
                         String name = order.get(orderIndex);
                         list.add(requiredArguments.get(name));

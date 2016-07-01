@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+@SuppressWarnings("unused")
 public abstract class Command extends CommandManager {
 
     private Class requiredType = Object.class;
@@ -18,8 +19,8 @@ public abstract class Command extends CommandManager {
 
     private int orderIndex = Integer.MAX_VALUE;
 
-    protected Map<Integer, String> order = new HashMap<>();
-    protected Map<String, Parserable> requiredArguments = new LinkedHashMap<>();
+    private Map<Integer, String> order = new HashMap<>();
+    private Map<String, Parserable> requiredArguments = new LinkedHashMap<>();
 
     private Parserable context = null;
 
@@ -80,7 +81,7 @@ public abstract class Command extends CommandManager {
         return this.requiredType;
     }
 
-    final protected void create() {
+    final void create() {
         Annotation annotation = getClass().getAnnotation(CommandDeclaration.class);
         if (annotation == null) {
             throw new RuntimeException("Command does not have a CommandDeclaration");
@@ -142,7 +143,7 @@ public abstract class Command extends CommandManager {
         return this.aliases;
     }
 
-    final public Map<String, Parserable> getRequiredArguments() {
+    final protected Map<String, Parserable> getRequiredArguments() {
         return new HashMap<String, Parserable>(this.requiredArguments);
     }
 
@@ -173,7 +174,7 @@ public abstract class Command extends CommandManager {
         return this;
     }
 
-    public Map<Integer,String> getOrder() {
+    Map<Integer,String> getOrder() {
         return order;
     }
 }

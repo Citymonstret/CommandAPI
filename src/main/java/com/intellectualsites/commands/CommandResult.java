@@ -3,6 +3,7 @@ package com.intellectualsites.commands;
 import com.intellectualsites.commands.callers.CommandCaller;
 import com.intellectualsites.commands.util.StringComparison;
 
+@SuppressWarnings("unused")
 public class CommandResult {
 
     private final Command command;
