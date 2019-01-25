@@ -4,13 +4,14 @@ import com.intellectualsites.commands.callers.CommandCaller;
 
 import java.util.Map;
 
-public class CommandInstance {
+@SuppressWarnings({"unused", "WeakerAccess"}) public class CommandInstance {
 
-    protected final CommandCaller caller;
+    private final CommandCaller caller;
     private final String[] arguments;
     private final Map<String, Object> valueMapping;
 
-    public CommandInstance(final CommandCaller caller, final String[] arguments, final Map<String, Object> valueMapping) {
+    public CommandInstance(final CommandCaller caller, final String[] arguments,
+        final Map<String, Object> valueMapping) {
         this.caller = caller;
         this.arguments = arguments;
         this.valueMapping = valueMapping;

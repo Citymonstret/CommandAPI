@@ -14,5 +14,6 @@ public interface CommandCaller<T> {
 
     boolean hasAttachment(String a);
 
-    void sendRequiredArgumentsList(CommandManager manager, Command cmd, Collection<Parserable> required, String usage);
+    void sendRequiredArgumentsList(CommandManager manager, Command cmd,
+        Collection<Parserable> required, String usage);
 }

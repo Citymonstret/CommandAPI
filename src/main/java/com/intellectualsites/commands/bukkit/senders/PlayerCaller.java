@@ -23,7 +23,8 @@ public class PlayerCaller extends BukkitCommandCaller<Player> {
         return this.player;
     }
 
-    public void sendRequiredArgumentsList(CommandManager manager, Command cmd, Collection<Parserable> required, String usage) {
+    public void sendRequiredArgumentsList(CommandManager manager, Command cmd,
+        Collection<Parserable> required, String usage) {
         // TODO Implement
     }
 }

@@ -6,14 +6,13 @@ import org.bukkit.Bukkit;
 
 import java.util.UUID;
 
-public class PlayerParser extends Parser<org.bukkit.entity.Player> {
+@SuppressWarnings("unused") public class PlayerParser extends Parser<org.bukkit.entity.Player> {
 
     public PlayerParser() {
         super("player", null);
     }
 
-    @Override
-    public ParserResult<org.bukkit.entity.Player> parse(String in) {
+    @Override @SuppressWarnings("deprecation") public ParserResult<org.bukkit.entity.Player> parse(String in) {
         final org.bukkit.entity.Player player;
         if (in.length() > 16) {
             player = Bukkit.getPlayer(UUID.fromString(in));

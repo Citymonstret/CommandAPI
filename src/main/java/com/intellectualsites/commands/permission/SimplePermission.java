@@ -9,15 +9,14 @@ public class SimplePermission extends Permission {
         super(internalKey);
     }
 
-    @Override
-    public boolean isPermitted(CommandCaller caller) {
-        return caller.hasAttachment(toString());
-    }
-
     public static SimplePermission getSimplePermission(Command command) {
         if (Permission.internalMap.containsKey(command.getPermission())) {
             return (SimplePermission) Permission.internalMap.get(command.getPermission());
         }
         return new SimplePermission(command.getPermission());
+    }
+
+    @Override public boolean isPermitted(CommandCaller caller) {
+        return caller.hasAttachment(toString());
     }
 }

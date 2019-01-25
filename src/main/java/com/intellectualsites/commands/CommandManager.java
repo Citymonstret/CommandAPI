@@ -20,8 +20,7 @@ import java.util.regex.Pattern;
  *
  * @author Sauilitired
  */
-@SuppressWarnings("unused")
-public class CommandManager {
+@SuppressWarnings({"unused", "WeakerAccess"}) public class CommandManager {
 
     private static final Pattern PATTERN_ON_SPACE = Pattern.compile(" ", Pattern.LITERAL);
 
@@ -43,8 +42,9 @@ public class CommandManager {
     /**
      * Constructor which allows you
      * to specify the command
-     * prefix, without reequiring
+     * prefix, without requiring
      * a pre made list of commands
+     *
      * @param initialCharacter Command prefix
      */
     public CommandManager(Character initialCharacter) {
@@ -53,10 +53,11 @@ public class CommandManager {
 
     /**
      * Constructor
+     *
      * @param initialCharacter Command prefix
-     * @param commands Pre made list of commands
+     * @param commands         Pre made list of commands
      */
-    public CommandManager(Character initialCharacter, List<Command> commands) {
+    @SuppressWarnings("WeakerAccess") public CommandManager(Character initialCharacter, List<Command> commands) {
         this.managerOptions = new ManagerOptions();
         this.commands = new ConcurrentHashMap<>();
         this.aliasMapping = new ConcurrentHashMap<>();
@@ -84,7 +85,7 @@ public class CommandManager {
     final public boolean createCommand(final Command command) {
         try {
             command.create();
-        } catch(final Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
             return false;
         }
@@ -100,7 +101,8 @@ public class CommandManager {
     }
 
     final public CommandResult handle(CommandCaller caller, String input) {
-        CommandResult.CommandResultBuilder commandResultBuilder = new CommandResult.CommandResultBuilder();
+        CommandResult.CommandResultBuilder commandResultBuilder =
+            new CommandResult.CommandResultBuilder();
         commandResultBuilder.setCaller(caller);
         commandResultBuilder.setManager(this);
         commandResultBuilder.setInput(input);
@@ -108,7 +110,8 @@ public class CommandManager {
         {
             // If we want to use the prefix, then this will make sure it's there
             // Could be used to separate commands from chat, etc
-            if (managerOptions.getRequirePrefix() && initialCharacter != null && !StringUtil.startsWith(initialCharacter, input)) {
+            if (managerOptions.getRequirePrefix() && initialCharacter != null && !StringUtil
+                .startsWith(initialCharacter, input)) {
                 commandResultBuilder.setCommandResult(CommandHandlingOutput.NOT_COMMAND);
                 break scope;
             }
@@ -133,27 +136,28 @@ public class CommandManager {
             Map<String, Object> valueMapping = new LinkedHashMap<>();
             boolean contextFetched = false;
 
-            if (cmd == null) commandFetch: {
-                if (parts.length > 1) {
-                    String tempContext = command;
-                    command = parts[1].toLowerCase();
+            if (cmd == null)
+                commandFetch:{
+                    if (parts.length > 1) {
+                        String tempContext = command;
+                        command = parts[1].toLowerCase();
 
-                    if (commands.containsKey(command)) {
-                        cmd = commands.get(command);
-                    } else if (aliasMapping.containsKey(command)) {
-                        cmd = commands.get(aliasMapping.get(command));
-                    }
+                        if (commands.containsKey(command)) {
+                            cmd = commands.get(command);
+                        } else if (aliasMapping.containsKey(command)) {
+                            cmd = commands.get(aliasMapping.get(command));
+                        }
 
-                    if (cmd != null && cmd.hasContext()) {
-                        Object val = cmd.getContext().parse(tempContext);
-                        valueMapping.put(cmd.getContext().getName(), val);
-                        contextFetched = true;
-                        break commandFetch;
+                        if (cmd != null && cmd.hasContext()) {
+                            Object val = cmd.getContext().parse(tempContext);
+                            valueMapping.put(cmd.getContext().getName(), val);
+                            contextFetched = true;
+                            break commandFetch;
+                        }
                     }
+                    commandResultBuilder.setCommandResult(CommandHandlingOutput.NOT_FOUND);
+                    break scope;
                 }
-                commandResultBuilder.setCommandResult(CommandHandlingOutput.NOT_FOUND);
-                break scope;
-            }
 
             commandResultBuilder.setCommand(cmd);
 
@@ -176,7 +180,9 @@ public class CommandManager {
 
             boolean permitted;
             if (managerOptions.getUseAdvancedPermissions()) {
-                permitted = AdvancedPermission.getAdvancedPermission(cmd, managerOptions.getPermissionChecker()).isPermitted(caller);
+                permitted = AdvancedPermission
+                    .getAdvancedPermission(cmd, managerOptions.getPermissionChecker())
+                    .isPermitted(caller);
             } else {
                 permitted = SimplePermission.getSimplePermission(cmd).isPermitted(caller);
             }
@@ -193,7 +199,8 @@ public class CommandManager {
                     success = false;
                 } else {
                     int index = 0;
-                    for (int orderIndex = Integer.MAX_VALUE; orderIndex > Integer.MAX_VALUE - order.size(); orderIndex--) {
+                    for (int orderIndex = Integer.MAX_VALUE;
+                         orderIndex > Integer.MAX_VALUE - order.size(); orderIndex--) {
                         String name = order.get(orderIndex);
                         Parserable parserable = requiredArguments.get(name);
                         Object value;
@@ -213,8 +220,10 @@ public class CommandManager {
                             if (parserResult.isParsed()) {
                                 value = parserResult.getResult();
                             } else {
-                                commandResultBuilder.setCommandResult(CommandHandlingOutput.ARGUMENT_ERROR);
-                                commandResultBuilder.setCommandArgumentError(new CommandArgumentError(parserResult, parserable));
+                                commandResultBuilder
+                                    .setCommandResult(CommandHandlingOutput.ARGUMENT_ERROR);
+                                commandResultBuilder.setCommandArgumentError(
+                                    new CommandArgumentError(parserResult, parserable));
                                 break scope;
                             }
                         }
@@ -228,7 +237,8 @@ public class CommandManager {
                 }
                 if (!success) {
                     List<Parserable> list = new ArrayList<>();
-                    for (int orderIndex = Integer.MAX_VALUE; orderIndex > Integer.MAX_VALUE - order.size(); orderIndex--) {
+                    for (int orderIndex = Integer.MAX_VALUE;
+                         orderIndex > Integer.MAX_VALUE - order.size(); orderIndex--) {
                         String name = order.get(orderIndex);
                         list.add(requiredArguments.get(name));
                     }
@@ -242,7 +252,8 @@ public class CommandManager {
                 if (!a) {
                     String usage = cmd.getUsage();
                     if (usage != null && !usage.isEmpty()) {
-                        caller.message(getManagerOptions().getUsageFormat().replace("%usage", usage));
+                        caller
+                            .message(getManagerOptions().getUsageFormat().replace("%usage", usage));
                     }
                     commandResultBuilder.setCommandResult(CommandHandlingOutput.WRONG_USAGE);
                     break scope;

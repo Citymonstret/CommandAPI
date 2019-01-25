@@ -32,7 +32,7 @@ public class StringUtil {
         return s;
     }
 
-    public static int getLevenshteinDistance(String s, String t) {
+    static int getLevenshteinDistance(String s, String t) {
         int n = s.length();
         int m = t.length();
         if (n == 0) {
@@ -47,9 +47,9 @@ public class StringUtil {
             n = m;
             m = t.length();
         }
-        int p[] = new int[n + 1];
-        int d[] = new int[n + 1];
-        int _d[];
+        int[] p = new int[n + 1];
+        int[] d = new int[n + 1];
+        int[] _d;
         int i;
         int j;
         char t_j;

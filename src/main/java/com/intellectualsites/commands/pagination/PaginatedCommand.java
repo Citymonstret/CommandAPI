@@ -3,15 +3,16 @@ package com.intellectualsites.commands.pagination;
 import com.intellectualsites.commands.Command;
 import com.intellectualsites.commands.CommandInstance;
 
-public abstract class PaginatedCommand<T> extends Command {
+@SuppressWarnings({"unused", "WeakerAccess"}) public abstract class PaginatedCommand<T> extends Command {
 
     private PaginationFactory<T> paginationFactory;
 
-    private ItemGetter<T> itemGetter;
-    private Class<T> type;
-    private int perPage;
+    private final ItemGetter<T> itemGetter;
+    private final Class<T> type;
+    private final int perPage;
 
-    public PaginatedCommand(Class<T> type, ItemGetter<T> itemGetter, int perPge, String command, String usage, String description, String permission, String[] aliases, Class requiredType) {
+    public PaginatedCommand(Class<T> type, ItemGetter<T> itemGetter, int perPge, String command,
+        String usage, String description, String permission, String[] aliases, Class requiredType) {
         super(command, usage, description, permission, aliases, requiredType);
         // paginationFactory = new PaginationFactory<T>(type, itemGetter, perPge);
         this.itemGetter = itemGetter;
@@ -19,11 +20,12 @@ public abstract class PaginatedCommand<T> extends Command {
         this.perPage = perPge;
     }
 
-    public abstract boolean handleTooBigPage(CommandInstance instance, int specifiedPage, int maxPages);
+    public abstract boolean handleTooBigPage(CommandInstance instance, int specifiedPage,
+        int maxPages);
 
     protected PaginationFactory<T> getPaginationFactory() {
         if (paginationFactory == null) {
-            paginationFactory = new PaginationFactory<T>(type, itemGetter.getItems(), perPage);
+            paginationFactory = new PaginationFactory<>(type, itemGetter.getItems(), perPage);
         }
         return paginationFactory;
     }
@@ -32,7 +34,8 @@ public abstract class PaginatedCommand<T> extends Command {
         if (!getRequiredArguments().containsKey("page")) {
             throw new RuntimeException("There is no page argument set :(");
         }
-        PaginatedCommandInstance<T> paginatedCommandInstance = new PaginatedCommandInstance<>(instance);
+        PaginatedCommandInstance paginatedCommandInstance =
+            new PaginatedCommandInstance(instance);
 
         int page = Math.max(instance.getInteger("page") - 1, 0);
         if (page >= getPaginationFactory().getPages().size()) {
@@ -44,9 +47,9 @@ public abstract class PaginatedCommand<T> extends Command {
         return onCommand(paginatedCommandInstance);
     }
 
-    public abstract boolean onCommand(PaginatedCommandInstance<T> instance);
+    public abstract boolean onCommand(PaginatedCommandInstance instance);
 
-    public class PaginatedCommandInstance<T> extends CommandInstance {
+    public class PaginatedCommandInstance extends CommandInstance {
 
         private PaginationFactory.Page<T> page;
 
@@ -54,12 +57,12 @@ public abstract class PaginatedCommand<T> extends Command {
             super(parent.getCaller(), parent.getArguments(), parent.getValueMapping());
         }
 
-        void setPage(final PaginationFactory.Page<T> page) {
-            this.page = page;
-        }
-
         public PaginationFactory.Page<T> getPage() {
             return this.page;
+        }
+
+        void setPage(final PaginationFactory.Page<T> page) {
+            this.page = page;
         }
     }
 }

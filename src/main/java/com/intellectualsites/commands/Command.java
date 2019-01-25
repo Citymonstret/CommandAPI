@@ -4,14 +4,12 @@ import com.intellectualsites.commands.callers.CommandCaller;
 import com.intellectualsites.commands.parser.Parser;
 import com.intellectualsites.commands.parser.Parserable;
 
-import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-@SuppressWarnings("unused")
-public abstract class Command extends CommandManager {
+@SuppressWarnings({"WeakerAccess", "unused"}) public abstract class Command extends CommandManager {
 
     private Class requiredType = Object.class;
     private String command, usage = "", description = "", permission = "";
@@ -19,8 +17,8 @@ public abstract class Command extends CommandManager {
 
     private int orderIndex = Integer.MAX_VALUE;
 
-    private Map<Integer, String> order = new HashMap<>();
-    private Map<String, Parserable> requiredArguments = new LinkedHashMap<>();
+    private final Map<Integer, String> order = new HashMap<>();
+    private final Map<String, Parserable> requiredArguments = new LinkedHashMap<>();
 
     private Parserable context = null;
 
@@ -67,7 +65,8 @@ public abstract class Command extends CommandManager {
         this.aliases = aliases;
     }
 
-    public Command(String command, String usage, String description, String permission, String[] aliases, Class requiredType) {
+    public Command(String command, String usage, String description, String permission,
+        String[] aliases, Class requiredType) {
         super(null, new ArrayList<Command>());
         this.command = command;
         this.usage = usage;
@@ -82,34 +81,35 @@ public abstract class Command extends CommandManager {
     }
 
     final void create() {
-        Annotation annotation = getClass().getAnnotation(CommandDeclaration.class);
+        final CommandDeclaration annotation = getClass().getAnnotation(CommandDeclaration.class);
         if (annotation == null) {
             throw new RuntimeException("Command does not have a CommandDeclaration");
         }
-        CommandDeclaration declaration = (CommandDeclaration) annotation;
-        this.command = declaration.command();
-        this.usage = declaration.usage();
-        this.description = declaration.description();
-        this.usage = declaration.usage();
-        this.permission = declaration.permission();
-        this.aliases = declaration.aliases();
-        this.requiredType = declaration.requiredType();
+        this.command = annotation.command();
+        this.usage = annotation.usage();
+        this.description = annotation.description();
+        this.usage = annotation.usage();
+        this.permission = annotation.permission();
+        this.aliases = annotation.aliases();
+        this.requiredType = annotation.requiredType();
     }
 
-    @Override
-    final public String toString() {
+    @Override final public String toString() {
         return this.command;
     }
-    @Override
-    final public int hashCode() {
+
+    @Override final public int hashCode() {
         return this.command.hashCode();
     }
 
-    public boolean onCommand(CommandCaller caller, String[] arguments, Map<String, Object> valueMapping) {
+    public boolean onCommand(CommandCaller caller, String[] arguments,
+        Map<String, Object> valueMapping) {
         return this.onCommand(new CommandInstance(caller, arguments, valueMapping));
     }
 
-    public boolean onCommand(CommandInstance instance) { return false; }
+    public boolean onCommand(CommandInstance instance) {
+        return false;
+    }
 
     public CommandResult handle(CommandCaller caller, String[] args) {
         if (args.length == 0) {
@@ -132,7 +132,7 @@ public abstract class Command extends CommandManager {
     }
 
     final public String getPermission() {
-        return this.permission.isEmpty() ? "rectangular." + this.command : this.permission;
+        return this.permission.isEmpty() ? this.command : this.permission;
     }
 
     final public String getDescription() {
@@ -144,7 +144,7 @@ public abstract class Command extends CommandManager {
     }
 
     final protected Map<String, Parserable> getRequiredArguments() {
-        return new HashMap<String, Parserable>(this.requiredArguments);
+        return new HashMap<>(this.requiredArguments);
     }
 
     public boolean hasContext() {
@@ -156,13 +156,13 @@ public abstract class Command extends CommandManager {
     }
 
     public <T> Command withContext(String name, Parser<T> type, String desc) {
-        this.context = new Parserable<T>(name, type, desc);
+        this.context = new Parserable<>(name, type, desc);
         return this;
     }
 
     public <T> Command withArgument(String name, Parser<T> argumentType, String desc) {
         // Argument argument = new Argument<T>(name, argumentType, desc);
-        Parserable parserable = new Parserable<T>(name, argumentType, desc);
+        Parserable parserable = new Parserable<>(name, argumentType, desc);
         order.put(orderIndex--, name);
         requiredArguments.put(name, parserable);
         return this;
@@ -174,7 +174,7 @@ public abstract class Command extends CommandManager {
         return this;
     }
 
-    Map<Integer,String> getOrder() {
+    Map<Integer, String> getOrder() {
         return order;
     }
 }

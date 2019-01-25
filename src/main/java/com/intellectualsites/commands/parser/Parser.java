@@ -2,9 +2,8 @@ package com.intellectualsites.commands.parser;
 
 public abstract class Parser<T> {
 
-    private String name;
-
     private final Object example;
+    private final String name;
 
     public Parser(String name, Object example) {
         this.name = name;
@@ -13,8 +12,7 @@ public abstract class Parser<T> {
 
     public abstract ParserResult<T> parse(String in);
 
-    @Override
-    public final String toString() {
+    @Override public final String toString() {
         return this.getName();
     }
 

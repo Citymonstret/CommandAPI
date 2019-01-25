@@ -7,17 +7,16 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class Permission {
 
-    public static Map<String, Permission> internalMap = new ConcurrentHashMap<String, Permission>();
+    static final Map<String, Permission> internalMap = new ConcurrentHashMap<>();
 
     private final String internalKey;
 
-    public Permission(String internalKey) {
+    Permission(String internalKey) {
         this.internalKey = internalKey;
         internalMap.put(internalKey, this);
     }
 
-    @Override
-    public String toString() {
+    @Override public String toString() {
         return this.internalKey;
     }
 

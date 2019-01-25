@@ -12,13 +12,15 @@ public class ConsoleCaller extends BukkitCommandCaller<ConsoleCommandSender> {
 
     public static final ConsoleCaller instance = new ConsoleCaller();
 
-    protected ConsoleCaller() {}
+    @SuppressWarnings("WeakerAccess") protected ConsoleCaller() {
+    }
 
     public ConsoleCommandSender getSuperCaller() {
         return Bukkit.getConsoleSender();
     }
 
-    public void sendRequiredArgumentsList(CommandManager manager, Command cmd, Collection<Parserable> required, String usage) {
+    public void sendRequiredArgumentsList(CommandManager manager, Command cmd,
+        Collection<Parserable> required, String usage) {
         // TODO: Implement
     }
 }

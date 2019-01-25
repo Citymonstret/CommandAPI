@@ -12,7 +12,8 @@ import org.bukkit.entity.Player;
 
 public abstract class PluginCommand extends PluginCommandBody implements CommandExecutor {
 
-    final public boolean onCommand(CommandSender commandSender, org.bukkit.command.Command command, String s, String[] strings) {
+    final public boolean onCommand(CommandSender commandSender, org.bukkit.command.Command command,
+        String s, String[] strings) {
         CommandCaller caller;
         if (commandSender instanceof ConsoleCommandSender) {
             caller = ConsoleCaller.instance;

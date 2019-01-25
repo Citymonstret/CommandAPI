@@ -3,19 +3,19 @@ package com.intellectualsites.commands;
 import com.intellectualsites.commands.callers.CommandCaller;
 import com.intellectualsites.commands.util.StringComparison;
 
-@SuppressWarnings("unused")
-public class CommandResult {
+@SuppressWarnings("unused") public class CommandResult {
 
     private final Command command;
     private final CommandManager manager;
     private final CommandCaller caller;
+    private final int commandResult;
     private Command closestMatch;
     private Throwable throwable;
-    private final int commandResult;
-    private String input;
-    private CommandArgumentError commandArgumentError;
+    private final String input;
+    private final CommandArgumentError commandArgumentError;
 
-    protected CommandResult(String input, CommandManager commandManager, Command command, CommandCaller caller, int commandResult, Throwable throwable, CommandArgumentError error) {
+    private CommandResult(String input, CommandManager commandManager, Command command,
+        CommandCaller caller, int commandResult, Throwable throwable, CommandArgumentError error) {
         this.command = command;
         this.caller = caller;
         this.manager = commandManager;
@@ -25,7 +25,8 @@ public class CommandResult {
 
         if (commandManager.getManagerOptions().getFindCloseMatches()) {
             if (commandResult == CommandHandlingOutput.NOT_FOUND) {
-                closestMatch = new StringComparison<Command>(input, commandManager.getCommands().toArray(new Command[0])).getMatchObject();
+                closestMatch = new StringComparison<>(input,
+                    commandManager.getCommands().toArray(new Command[0])).getMatchObject();
             }
         }
 
@@ -72,7 +73,7 @@ public class CommandResult {
         return this.commandArgumentError;
     }
 
-    protected static class CommandResultBuilder {
+    @SuppressWarnings("WeakerAccess") protected static class CommandResultBuilder {
 
         private int commandResult = CommandHandlingOutput.OUTPUT_BUILD_FAILURE;
         private CommandCaller caller = null;
@@ -82,7 +83,8 @@ public class CommandResult {
         private Throwable throwable = null;
         private CommandArgumentError commandArgumentError = null;
 
-        protected CommandResultBuilder(){}
+        protected CommandResultBuilder() {
+        }
 
         public void setCommandArgumentError(final CommandArgumentError error) {
             this.commandArgumentError = error;
@@ -100,7 +102,7 @@ public class CommandResult {
             this.command = command;
         }
 
-        public void  setCaller(CommandCaller caller) {
+        public void setCaller(CommandCaller caller) {
             this.caller = caller;
         }
 
@@ -112,8 +114,9 @@ public class CommandResult {
             this.input = string;
         }
 
-        public CommandResult build() {
-            return new CommandResult(input, manager, command, caller, commandResult, throwable, commandArgumentError);
+        CommandResult build() {
+            return new CommandResult(input, manager, command, caller, commandResult, throwable,
+                commandArgumentError);
         }
     }
 }

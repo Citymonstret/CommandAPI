@@ -3,8 +3,7 @@ package com.intellectualsites.commands;
 import com.intellectualsites.commands.parser.ParserResult;
 import com.intellectualsites.commands.parser.Parserable;
 
-@SuppressWarnings("unused")
-public class CommandArgumentError {
+@SuppressWarnings("unused") public class CommandArgumentError {
 
     private final ParserResult result;
     private final Parserable parserable;

@@ -8,7 +8,7 @@ public class Parserable<T> {
 
     private final String desc;
 
-    public Parserable(final  String name, final Parser<T> parser, final String  desc) {
+    public Parserable(final String name, final Parser<T> parser, final String desc) {
         this.name = name;
         this.parser = parser;
         this.desc = desc;

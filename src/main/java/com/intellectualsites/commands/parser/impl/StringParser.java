@@ -9,9 +9,8 @@ public class StringParser extends Parser<String> {
         super("string", "Example...");
     }
 
-    @Override
-    public ParserResult<String> parse(String in) {
-        return new ParserResult<String>(in, true);
+    @Override public ParserResult<String> parse(String in) {
+        return new ParserResult<>(in, true);
     }
 
 }

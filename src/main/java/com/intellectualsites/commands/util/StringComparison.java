@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
-public class StringComparison<T> {
+@SuppressWarnings({"unused", "WeakerAccess"}) public class StringComparison<T> {
 
     private T bestMatch;
     private double match = Integer.MAX_VALUE;
@@ -21,6 +21,7 @@ public class StringComparison<T> {
     }
 
     public StringComparison(final String input, final Collection<T> objects) {
+        //noinspection unchecked
         init(input, (T[]) objects.toArray());
     }
 
@@ -29,26 +30,6 @@ public class StringComparison<T> {
      */
     public StringComparison() {
     }
-
-    public void init(String input, final T[] objects) {
-        int c;
-        this.bestMatch = objects[0];
-        this.bestMatchObject = objects[0];
-        input = input.toLowerCase();
-        for (final T o : objects) {
-            if ((c = compare(input, getString(o).toLowerCase())) < this.match) {
-                this.match = c;
-                this.bestMatch = o;
-                this.bestMatchObject = o;
-            }
-        }
-    }
-
-    public String getString(final T o) {
-        return o.toString();
-    }
-
-
 
     /**
      * Compare two strings
@@ -75,7 +56,7 @@ public class StringComparison<T> {
      * @return ArrayList
      */
     public static ArrayList<String> wLetterPair(final String s) {
-        final ArrayList<String> aPairs = new ArrayList<String>();
+        final ArrayList<String> aPairs = new ArrayList<>();
         final String[] wo = s.split("\\s");
         for (final String aWo : wo) {
             final String[] po = sLetterPair(aWo);
@@ -97,6 +78,24 @@ public class StringComparison<T> {
             p[i] = s.substring(i, i + 2);
         }
         return p;
+    }
+
+    public void init(String input, final T[] objects) {
+        int c;
+        this.bestMatch = objects[0];
+        this.bestMatchObject = objects[0];
+        input = input.toLowerCase();
+        for (final T o : objects) {
+            if ((c = compare(input, getString(o).toLowerCase())) < this.match) {
+                this.match = c;
+                this.bestMatch = o;
+                this.bestMatchObject = o;
+            }
+        }
+    }
+
+    public String getString(final T o) {
+        return o.toString();
     }
 
     /**

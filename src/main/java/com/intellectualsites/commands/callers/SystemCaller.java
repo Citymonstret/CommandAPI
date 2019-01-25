@@ -1,13 +1,14 @@
 package com.intellectualsites.commands.callers;
+
 import com.intellectualsites.commands.Command;
 import com.intellectualsites.commands.CommandManager;
 import com.intellectualsites.commands.parser.Parserable;
 
 import java.util.Collection;
 
-public class SystemCaller implements CommandCaller {
+@SuppressWarnings({"unused"}) public class SystemCaller implements CommandCaller {
 
-    public boolean hasPermission(String permission) {
+    @SuppressWarnings("SameReturnValue") public boolean hasPermission(String permission) {
         return true;
     }
 
@@ -23,13 +24,17 @@ public class SystemCaller implements CommandCaller {
         return true;
     }
 
-    public void sendRequiredArgumentsList(CommandManager manager, Command cmd, Collection required, String usage) {
+    public void sendRequiredArgumentsList(CommandManager manager, Command cmd, Collection required,
+        String usage) {
         StringBuilder builder = new StringBuilder();
         builder.append(cmd.getCommand()).append(" requires ");
-        for (Object o: required) {
+        for (Object o : required) {
             Parserable parserable = (Parserable) o;
-            builder.append(parserable.getName()).append(" (").append(parserable.getParser().getName()).append("; Example: ").append(parserable.getParser().getExample()).append("), ");
+            builder.append(parserable.getName()).append(" (")
+                .append(parserable.getParser().getName()).append("; Example: ")
+                .append(parserable.getParser().getExample()).append("), ");
         }
         message(builder.substring(0, builder.length() - 2));
     }
+
 }

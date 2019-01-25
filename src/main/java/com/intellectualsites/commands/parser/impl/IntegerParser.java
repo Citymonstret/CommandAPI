@@ -19,22 +19,21 @@ public class IntegerParser extends Parser<Integer> {
         this.hasRange = true;
     }
 
-    @Override
-    public ParserResult<Integer> parse(String in) {
+    @Override public ParserResult<Integer> parse(String in) {
         Integer value = null;
         try {
             value = Integer.parseInt(in);
-        } catch(final Exception ignored) {
+        } catch (final Exception ignored) {
         }
         if (hasRange && value != null) {
             int i = value;
             i = Math.min(i, max);
             i = Math.max(i, min);
             if (i != value) {
-                return new ParserResult<>(value +
-                        " is not within range (" + min + " -> " +
-                        (max == Integer.MAX_VALUE ? "infinity" : max)
-                        + ")");
+                return new ParserResult<>(
+                    value + " is not within range (" + min + " -> " + (max == Integer.MAX_VALUE ?
+                        "infinity" :
+                        max) + ")");
             }
         }
         if (value != null) {
